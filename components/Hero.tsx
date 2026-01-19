@@ -131,11 +131,11 @@ const Hero: React.FC = () => {
 
             {/* Text */}
             <motion.div variants={itemVariants}>
-              <h1 className="text-4xl md:text-5xl font-display font-bold text-white mb-6 leading-tight">
-                Where your story <br /> <span className="text-transparent bg-clip-text bg-gradient-to-r from-neon-pink to-purple-600">writes the rules.</span>
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold text-white mb-6 leading-[1.1]">
+                Redefining <br /> <span className="text-transparent bg-clip-text bg-gradient-to-r from-neon-cyan to-blue-500">Serious Roleplay.</span>
               </h1>
               <p className="text-lg md:text-xl text-gray-400 font-light mb-10 leading-relaxed max-w-2xl">
-                Experience immersive roleplay driven by a serious community.
+                Experience a world where every action has a consequence and every character has a voice. Join the ultimate FiveM destination.
               </p>
             </motion.div>
 
