@@ -72,7 +72,7 @@ function App() {
   if (loading) return <div className="min-h-screen bg-rush-950 flex items-center justify-center text-white">Loading...</div>;
 
   return (
-    <Router basename="/rushhourrp">
+    <Router>
       <div className="min-h-screen bg-rush-950 font-sans selection:bg-neon-pink selection:text-white">
         <Routes>
           <Route path="/" element={<MainLayout user={user} isAdmin={isAdmin} onLogin={handleLogin} onLogout={handleLogout} />} />
