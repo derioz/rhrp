@@ -69,7 +69,7 @@ const AVAILABLE_ICONS = [
     { label: 'Crown', value: 'crown', icon: Crown },
 ];
 
-const AdminDashboard: React.FC = () => {
+const AdminDashboard: React.FC<{ isDemo?: boolean }> = ({ isDemo = false }) => {
     const [activeTab, setActiveTab] = useState('overview');
     const navigate = useNavigate();
 
@@ -103,10 +103,11 @@ const AdminDashboard: React.FC = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                if (auth.currentUser) {
+                if (auth.currentUser || isDemo) {
+                    const currentUser = auth.currentUser || { displayName: 'Demo Admin', photoURL: 'https://via.placeholder.com/150' };
                     setProfileData({
-                        displayName: auth.currentUser.displayName || '',
-                        photoURL: auth.currentUser.photoURL || ''
+                        displayName: currentUser.displayName || '',
+                        photoURL: currentUser.photoURL || ''
                     });
                 }
 
@@ -137,12 +138,12 @@ const AdminDashboard: React.FC = () => {
             }
         };
 
-        if (auth.currentUser) fetchData();
-    }, [auth.currentUser]);
+        if (auth.currentUser || isDemo) fetchData();
+    }, [auth.currentUser, isDemo]);
 
     useEffect(() => {
-        if (!auth.currentUser) navigate('/');
-    }, [navigate]);
+        if (!auth.currentUser && !isDemo) navigate('/');
+    }, [navigate, isDemo]);
 
     const handleLogout = async () => {
         await auth.signOut();

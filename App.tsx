@@ -38,6 +38,7 @@ const MainLayout: React.FC<{ user: User | null; isAdmin: boolean; onLogin: () =>
 function App() {
   const [user, setUser] = useState<User | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isDemoMode, setIsDemoMode] = useState(false);
   const [loading, setLoading] = useState(true);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
@@ -45,7 +46,8 @@ function App() {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
       if (currentUser) {
-        setIsAdmin(true); // Treat all logged-in users (including anonymous) as Admin for Showcase
+        setIsAdmin(true);
+        setIsDemoMode(false);
       } else {
         setIsAdmin(false);
       }
@@ -69,24 +71,30 @@ function App() {
   };
 
   const handleDemoLogin = async () => {
-    try {
-      await signInAnonymously(auth);
-      setIsLoginModalOpen(false);
-    } catch (error) {
-      console.error("Demo login failed", error);
-      alert("Demo login failed. Check console.");
-    }
+    // PURE BYPASS: Setup local state to allow access without Firebase Auth
+    setIsDemoMode(true);
+    setIsAdmin(true);
+    setIsLoginModalOpen(false);
   };
 
   const handleLogout = async () => {
     try {
-      await signOut(auth);
+      if (!isDemoMode) {
+        await signOut(auth);
+      }
+      setIsDemoMode(false);
+      setIsAdmin(false);
     } catch (error) {
       console.error("Logout failed", error);
     }
   };
 
   if (loading) return <div className="min-h-screen bg-rush-950 flex items-center justify-center text-white">Loading...</div>;
+
+  const demoUser = {
+    displayName: 'Demo Admin',
+    photoURL: 'https://via.placeholder.com/150'
+  } as any;
 
   return (
     <Router>
@@ -98,10 +106,10 @@ function App() {
           onDemoLogin={handleDemoLogin}
         />
         <Routes>
-          <Route path="/" element={<MainLayout user={user} isAdmin={isAdmin} onLogin={handleLoginClick} onLogout={handleLogout} />} />
+          <Route path="/" element={<MainLayout user={user || (isDemoMode ? demoUser : null)} isAdmin={isAdmin || isDemoMode} onLogin={handleLoginClick} onLogout={handleLogout} />} />
           <Route
             path="/admin"
-            element={user ? <AdminDashboard /> : <Navigate to="/" />}
+            element={(user || isDemoMode) ? <AdminDashboard isDemo={isDemoMode} /> : <Navigate to="/" />}
           />
         </Routes>
       </div>
