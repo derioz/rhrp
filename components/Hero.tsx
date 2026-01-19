@@ -131,8 +131,11 @@ const Hero: React.FC = () => {
 
             {/* Text */}
             <motion.div variants={itemVariants}>
-              <p className="text-xl md:text-2xl text-rush-100/90 font-light mb-10 leading-relaxed tracking-wide">
-                Where your story writes the rules. <br className="hidden md:block" /> Experience <span className="text-white font-bold border-b border-neon-cyan/50 pb-0.5">immersive roleplay</span> driven by a serious community.
+              <h1 className="text-4xl md:text-5xl font-display font-bold text-white mb-6 leading-tight">
+                Where your story <br /> <span className="text-transparent bg-clip-text bg-gradient-to-r from-neon-pink to-purple-600">writes the rules.</span>
+              </h1>
+              <p className="text-lg md:text-xl text-gray-400 font-light mb-10 leading-relaxed max-w-2xl">
+                Experience immersive roleplay driven by a serious community.
               </p>
             </motion.div>
 

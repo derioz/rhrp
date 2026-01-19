@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { onAuthStateChanged, User, signInWithPopup, signOut } from 'firebase/auth';
+import { onAuthStateChanged, User, signInWithPopup, signOut, signInAnonymously } from 'firebase/auth';
 import { auth, googleProvider } from './firebase';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
@@ -13,6 +13,7 @@ import AdminDashboard from './components/AdminDashboard'; // Import New Componen
 import ScrollProgress from './components/ScrollProgress';
 import BackToTop from './components/BackToTop';
 import MouseTrail from './components/MouseTrail';
+import LoginModal from './components/LoginModal';
 
 // Main Layout for Public Pages
 const MainLayout: React.FC<{ user: User | null; isAdmin: boolean; onLogin: () => void; onLogout: () => void }> = ({ user, isAdmin, onLogin, onLogout }) => {
@@ -38,12 +39,13 @@ function App() {
   const [user, setUser] = useState<User | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
       if (currentUser) {
-        setIsAdmin(true); // Simulating Admin
+        setIsAdmin(true); // Treat all logged-in users (including anonymous) as Admin for Showcase
       } else {
         setIsAdmin(false);
       }
@@ -52,12 +54,27 @@ function App() {
     return () => unsubscribe();
   }, []);
 
-  const handleLogin = async () => {
+  const handleLoginClick = () => {
+    setIsLoginModalOpen(true);
+  };
+
+  const handleGoogleLogin = async () => {
     try {
       await signInWithPopup(auth, googleProvider);
+      setIsLoginModalOpen(false);
     } catch (error) {
       console.error("Login failed", error);
       alert("Login failed. Check console.");
+    }
+  };
+
+  const handleDemoLogin = async () => {
+    try {
+      await signInAnonymously(auth);
+      setIsLoginModalOpen(false);
+    } catch (error) {
+      console.error("Demo login failed", error);
+      alert("Demo login failed. Check console.");
     }
   };
 
@@ -74,8 +91,14 @@ function App() {
   return (
     <Router>
       <div className="min-h-screen bg-rush-950 font-sans selection:bg-neon-pink selection:text-white">
+        <LoginModal
+          isOpen={isLoginModalOpen}
+          onClose={() => setIsLoginModalOpen(false)}
+          onGoogleLogin={handleGoogleLogin}
+          onDemoLogin={handleDemoLogin}
+        />
         <Routes>
-          <Route path="/" element={<MainLayout user={user} isAdmin={isAdmin} onLogin={handleLogin} onLogout={handleLogout} />} />
+          <Route path="/" element={<MainLayout user={user} isAdmin={isAdmin} onLogin={handleLoginClick} onLogout={handleLogout} />} />
           <Route
             path="/admin"
             element={user ? <AdminDashboard /> : <Navigate to="/" />}
